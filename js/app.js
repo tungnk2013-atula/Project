@@ -42,14 +42,17 @@ function laptopArt(p, sm = false) {
 /* ---------------- Store (localStorage) ---------------- */
 const DB = {
   get users() {
+    const SEED_VERSION = 2; // đổi số này mỗi lần cập nhật danh sách tài khoản
     let u = JSON.parse(localStorage.getItem("lt_users") || "null");
-    if (!u) {
+    const v = +localStorage.getItem("lt_seed_v") || 0;
+    if (!u || v !== SEED_VERSION) {
       u = SEED_USERS.map(s => ({
         stt: s.stt, name: s.name.trim(), email: s.email,
         pass: defaultPassword(s.email), role: "user"
       }));
       u.push({ ...ADMIN_USER, stt: 0, pass: defaultPassword(ADMIN_USER.email) });
       localStorage.setItem("lt_users", JSON.stringify(u));
+      localStorage.setItem("lt_seed_v", SEED_VERSION);
     }
     return u;
   },
@@ -158,7 +161,7 @@ function viewHome(filteredList) {
 
   <div class="stats-band">
     <div><div class="num">15+</div><div class="lbl">Mẫu laptop mới nhất</div></div>
-    <div><div class="num">21</div><div class="lbl">Thành viên đã đăng ký</div></div>
+    <div><div class="num">${DB.users.filter(u => u.role !== "admin").length}</div><div class="lbl">Thành viên đã đăng ký</div></div>
     <div><div class="num">2h</div><div class="lbl">Giao hàng nội thành</div></div>
     <div><div class="num">24/7</div><div class="lbl">Hỗ trợ khách hàng</div></div>
   </div>

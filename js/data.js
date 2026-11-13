@@ -173,32 +173,11 @@ const PRODUCTS = [
 ];
 
 /* ------------------------------------------------------------
-   TÀI KHOẢN ĐƯỢC SEED TỪ FILE EXCEL
-   "Thông tin tài khoản xin cấp lưu lượng VDTC - VAI.xlsx"
+   TÀI KHOẢN HỆ THỐNG (đã tinh giản theo yêu cầu)
    Mật khẩu mặc định: [phần trước @ của email] + "@123"
    ------------------------------------------------------------ */
 const SEED_USERS = [
-  { stt: 1,  name: "Nguyễn Khánh Tùng",  email: "tungnk@viettel.com.vn" },
-  { stt: 2,  name: "Đỗ Văn Doanh",       email: "doanhdv@viettel.com.vn" },
-  { stt: 3,  name: "Trần Thanh Sơn",     email: "tranthanhson220804@gmail.com" },
-  { stt: 4,  name: "Lê Thanh Hoa",       email: "hoalt@vdtc.com.vn" },
-  { stt: 5,  name: "Nguyễn Văn Quyền",   email: "nguyenquyen4820@gmail.com" },
-  { stt: 6,  name: "Vũ Đình Duy",        email: "vdduy2000@gmail.com" },
-  { stt: 7,  name: "Hoàng Hải Yến",      email: "yenhh@vdtc.com.vn" },
-  { stt: 8,  name: "Vũ Thị Linh",        email: "linhvt@vdtc.com.vn" },
-  { stt: 9,  name: "Vi Thị Thu Hà Nhận", email: "nhanvtth@vdtc.com.vn" },
-  { stt: 10, name: "Vũ Thanh Hằng",      email: "hangvt@vdtc.com.vn" },
-  { stt: 11, name: "Nguyễn Thị An",      email: "annt@vdtc.com.vn" },
-  { stt: 12, name: "Trần Đức Hải",       email: "haidt7t@gmail.com" },
-  { stt: 13, name: "Nguyễn Văn Nam",     email: "namnv.230696@gmail.com" },
-  { stt: 14, name: "Ngô Trung Kiên",     email: "trungkiensp24@gmail.com" },
-  { stt: 15, name: "Trần Xuân Đệ",       email: "detx@vdtc.com.vn" },
-  { stt: 16, name: "Dương Anh Tuấn",     email: "tuanduog04@gmail.com" },
-  { stt: 17, name: "Cung Tuệ Anh",       email: "tueanh171102@gmail.com" },
-  { stt: 18, name: "Nguyễn Minh Đức",    email: "pandasiunkan@gmail.com" },
-  { stt: 19, name: "Hoàng Kim Anh",      email: "anhhk@vdtc.com.vn" },
-  { stt: 20, name: "Vũ Thị Ngọc Mai",    email: "tk1cuanam@gmail.com" },
-  { stt: 21, name: "Đỗ Minh Hiếu",       email: "hieudo062@gmail.com" }
+  { stt: 1, name: "Nguyễn Khánh Tùng", email: "tungnk@viettel.com.vn" }
 ];
 
 // Tài khoản quản trị (thêm ngoài danh sách Excel)
