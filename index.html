@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VDTC Laptop — Máy tính xách tay chính hãng</title>
+  <meta name="description" content="VDTC Laptop — Cửa hàng máy tính laptop chính hãng: MacBook, Dell, HP, Lenovo, Asus, MSI... Giá tốt, bảo hành toàn quốc.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===== Top bar ===== -->
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <span>📧 Hotline: <b>1800.8123</b> (8:00 - 21:00)</span>
+      <span class="topbar-right">Ưu đãi giảm đến <b>30%</b> cho đơn hàng đầu tiên 🎁</span>
+    </div>
+  </div>
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#/" class="logo" id="logoLink">
+        <span class="logo-mark">LT</span>
+        <span class="logo-text">VDTC<b>LAPTOP</b></span>
+      </a>
+
+      <div class="search-box" id="searchBox">
+        <input type="text" id="searchInput" placeholder="Bạn tìm laptop gì hôm nay?...">
+        <button id="searchBtn" aria-label="Tìm kiếm">🔍</button>
+      </div>
+
+      <nav class="nav-actions">
+        <a href="#/products" class="nav-btn" title="Sản phẩm">
+          <span class="nav-ico">💻</span><span class="nav-label">Sản phẩm</span>
+        </a>
+        <a href="#/cart" class="nav-btn" title="Giỏ hàng">
+          <span class="nav-ico">🛒</span><span class="nav-label">Giỏ hàng</span>
+          <span class="cart-badge" id="cartBadge">0</span>
+        </a>
+        <!-- Đăng nhập / Tài khoản (JS render) -->
+        <span id="authArea"></span>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+      </nav>
+    </div>
+
+    <!-- Danh mục -->
+    <div class="categories container" id="categoryBar">
+      <a href="#/products" class="cat-link all">Tất cả sản phẩm</a>
+      <a href="#/products?brand=Apple" class="cat-link">🍎 Apple</a>
+      <a href="#/products?brand=Dell" class="cat-link">💻 Dell</a>
+      <a href="#/products?brand=HP" class="cat-link">🖨 HP</a>
+      <a href="#/products?brand=Lenovo" class="cat-link">📘 Lenovo</a>
+      <a href="#/products?brand=Asus" class="cat-link">⚡ Asus</a>
+      <a href="#/products?brand=Acer" class="cat-link">🍃 Acer</a>
+      <a href="#/products?brand=MSI" class="cat-link">🎮 MSI</a>
+      <a href="#/products?brand=LG" class="cat-link">📺 LG</a>
+      <a href="#/products?brand=Gigabyte" class="cat-link">🛠 Gigabyte</a>
+    </div>
+  </header>
+
+  <!-- ===== Nội dung chính (SPA render) ===== -->
+  <main id="view" class="container"></main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a href="#/" class="logo footer-logo">
+          <span class="logo-mark">LT</span>
+          <span class="logo-text logo-text-light">VDTC<b>LAPTOP</b></span>
+        </a>
+        <p class="footer-desc">Thành viên hệ sinh thái Giao thông số (VDTC).
+          Cung cấp máy tính xách tay chính hãng với chế độ bảo hành toàn quốc
+          và trải nghiệm mua sắm trực tuyến an toàn, tiện lợi.</p>
+        <div class="footer-badges">
+          <span>✅ 100% chính hãng</span>
+          <span>🚚 Giao hàng toàn quốc</span>
+          <span>🔄 Đổi trả 30 ngày</span>
+        </div>
+      </div>
+      <div>
+        <h4>Hỗ trợ khách hàng</h4>
+        <a href="#/">Trang chủ</a>
+        <a href="#/products">Tất cả sản phẩm</a>
+        <a href="#/cart">Giỏ hàng</a>
+        <a href="#/account">Tài khoản của tôi</a>
+      </div>
+      <div>
+        <h4>Chính sách</h4>
+        <a href="#/">Chính sách bảo hành</a>
+        <a href="#/">Chính sách đổi trả</a>
+        <a href="#/">Chính sách vận chuyển</a>
+        <a href="#/">Quy định sử dụng</a>
+      </div>
+      <div>
+        <h4>Liên hệ</h4>
+        <p>📞 1800.8123</p>
+        <p>📧 cskh@vdtc.com.vn</p>
+        <p>📍 Khu đô thị Cầu Giấy, Hà Nội</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        © 2026 VDTC Laptop — Demo e-commerce phong cách ePass. Thiết kế tham khảo giaothongso.com.vn.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
