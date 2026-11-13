@@ -628,20 +628,90 @@ function viewAdmin() {
 
   <section class="section">
     <div class="section-head"><h2 class="section-title">👥 Tài khoản hệ thống (${users.length})</h2></div>
-    <div class="cart-table" style="overflow-x:auto">
-      <div class="cart-row head" style="grid-template-columns:60px 1.4fr 1.6fr 1fr 100px">
-        <span>STT</span><span>Họ tên</span><span>Email</span><span>Số đơn</span><span>PW mặc định</span>
+
+    <!-- Form thêm tài khoản mới -->
+    <div class="cart-table" style="padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <b style="font-size:15px">➕ Thêm tài khoản mới</b>
       </div>
-      ${users.map(x => `
-        <div class="cart-row" style="grid-template-columns:60px 1.4fr 1.6fr 1fr 100px;font-size:13.5px">
+      <form onsubmit="addUser(event)" style="display:grid;grid-template-columns:80px 1.2fr 1.6fr 1fr 220px auto;gap:10px;align-items:end">
+        <div class="field" style="margin:0">
+          <label>STT</label>
+          <input id="nuStt" type="number" min="1" value="${users.length + 1}">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Họ tên</label>
+          <input id="nuName" required placeholder="Nguyễn Văn A">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Email</label>
+          <input id="nuEmail" type="email" required placeholder="a@vdtc.com.vn">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Mật khẩu</label>
+          <input id="nuPass" required minlength="6" placeholder="≥ 6 ký tự">
+        </div>
+        <div class="field" style="margin:0">
+          <label>Quyền</label>
+          <select id="nuRole">
+            <option value="user">Người dùng</option>
+            <option value="admin">Quản trị viên</option>
+          </select>
+        </div>
+        <button class="btn btn-grad btn-sm" style="height:42px">Thêm</button>
+      </form>
+    </div>
+
+    <!-- Bảng tài khoản -->
+    <div class="cart-table" style="overflow-x:auto">
+      <div class="cart-row head" style="grid-template-columns:60px 1.4fr 1.6fr 1fr 130px 90px 60px">
+        <span>STT</span><span>Họ tên</span><span>Email</span><span>Số đơn</span><span>Quyền</span><span>Mật khẩu</span><span></span>
+      </div>
+      ${users.map((x, i) => `
+        <div class="cart-row" style="grid-template-columns:60px 1.4fr 1.6fr 1fr 130px 90px 60px;font-size:13.5px">
           <span>${x.stt || "-"}</span>
-          <span><b>${esc(x.name)}</b>${x.email === u.email ? " ⭐" : ""}</span>
+          <span><b>${esc(x.name)}</b>${x.role === "admin" ? " ⭐" : ""}</span>
           <span style="color:var(--gray)">${esc(x.email)}</span>
           <span>${DB.ordersOf(x.email).length}</span>
+          <span>${x.role === "admin" ? "🛡️ Admin" : "👤 User"}</span>
           <span><code style="font-size:11.5px;background:var(--bg-soft);padding:2px 8px;border-radius:6px">${esc(x.pass)}</code></span>
+          <span>
+            ${x.email !== u.email ? `
+              <button class="cart-remove" title="Xóa tài khoản" onclick="removeUser(${i})">🗑️</button>
+            ` : `<span title="Không thể tự xóa chính mình" style="cursor:not-allowed;opacity:.35">🗑️</span>`}
+          </span>
         </div>`).join("")}
     </div>
   </section>`;
+}
+
+/* ---- Admin: thêm / xóa tài khoản ---- */
+function addUser(e) {
+  e.preventDefault();
+  const stt = +$("#nuStt").value || DB.users.length;
+  const name = $("#nuName").value.trim();
+  const email = $("#nuEmail").value.trim().toLowerCase();
+  const pass = $("#nuPass").value;
+  const role = $("#nuRole").value;
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toast("❌ Email không hợp lệ!", "err");
+  if (DB.users.some(x => x.email === email)) return toast("❌ Email đã tồn tại!", "err");
+
+  const users = DB.users;
+  users.push({ stt, name, email, pass, role });
+  DB.users = users;
+  toast(`✅ Đã thêm tài khoản "${name}"`, "ok");
+  render();
+}
+
+function removeUser(i) {
+  const users = DB.users.filter(x => x.role !== "admin"); // index khớp bảng hiển thị
+  const target = users[i];
+  if (!target) return;
+  if (!confirm(`Xóa tài khoản "${target.name}" (${target.email})?\nHành động này không thể hoàn tác.`)) return;
+  DB.users = DB.users.filter(x => x.email !== target.email);
+  toast(`🗑️ Đã xóa "${target.name}"`, "ok");
+  render();
 }
 
 function markDone(orderId, email) {
