@@ -429,6 +429,7 @@ input, select, textarea { font-family: inherit; font-size: 14px; }
 }
 .stats-band .num { font-size: 34px; font-weight: 900; font-family: "Kanit", sans-serif; }
 .stats-band .lbl { font-size: 13px; opacity: .9; }
+.admin-band { margin-top: 22px; }
 
 /* ===================== Toast ===================== */
 .toast {

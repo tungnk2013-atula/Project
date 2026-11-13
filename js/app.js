@@ -63,6 +63,11 @@ const DB = {
     const all = JSON.parse(localStorage.getItem("lt_orders") || "{}");
     return all[email] || [];
   },
+  ordersAll() {
+    const all = JSON.parse(localStorage.getItem("lt_orders") || "{}");
+    return Object.entries(all).flatMap(([email, orders]) =>
+      orders.map(o => ({ ...o, email })));
+  },
   saveOrder(email, order) {
     const all = JSON.parse(localStorage.getItem("lt_orders") || "{}");
     (all[email] = all[email] || []).unshift(order);
@@ -82,7 +87,9 @@ function renderAuthArea() {
       <a href="#/account" class="nav-btn" title="${esc(u.name)}">
         <span class="nav-ico" style="background:var(--grad);color:#fff;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-size:11px;font-weight:800">${esc(initials)}</span>
         <span class="nav-label">${esc(u.name.split(" ").slice(-1)[0])}</span>
-      </a>`;
+      </a>
+      ${u.role === "admin" ? `<a href="#/admin" class="nav-btn" title="Trang quản trị">
+        <span class="nav-ico">🛡️</span><span class="nav-label">Admin</span></a>` : ""}`;
   } else {
     area.innerHTML = `<a href="#/login" class="btn-user"><span class="avatar">👤</span> Đăng nhập</a>`;
   }
@@ -550,6 +557,99 @@ function viewAccount() {
   </section>`;
 }
 
+/* ---------------- Views: ADMIN ---------------- */
+function viewAdmin() {
+  const u = currentUser();
+  if (!u) { setTimeout(() => location.hash = "#/login"); return viewLogin(); }
+  if (u.role !== "admin") {
+    return `<div class="empty"><div class="big">⛔</div><h3>Trang chỉ dành cho quản trị viên</h3>
+      <p>Tài khoản "${esc(u.email)}" không có quyền truy cập.</p>
+      <a href="#/" class="btn btn-grad">Về trang chủ</a></div>`;
+  }
+
+  const orders = DB.ordersAll().sort((a, b) => b.at - a.at);
+  const revenue = orders.reduce((s, o) => s + o.total, 0);
+  const itemsSold = orders.reduce((s, o) => s + o.items.reduce((x, i) => x + i.qty, 0), 0);
+  const users = DB.users.filter(x => x.role !== "admin");
+
+  // Doanh thu theo hãng
+  const byBrand = {};
+  orders.forEach(o => o.items.forEach(i => {
+    const p = PRODUCTS.find(x => x.name === i.name);
+    const brand = p ? p.brand : "Khác";
+    byBrand[brand] = (byBrand[brand] || 0) + i.price * i.qty;
+  }));
+
+  return `
+  <div class="stats-band admin-band">
+    <div><div class="num">${orders.length}</div><div class="lbl">Tổng đơn hàng</div></div>
+    <div><div class="num">${itemsSold}</div><div class="lbl">Sản phẩm đã bán</div></div>
+    <div><div class="num">${fmtMoney(revenue).replace("₫", "")}₫</div><div class="lbl">Tổng doanh thu</div></div>
+    <div><div class="num">${users.length}</div><div class="lbl">Tài khoản người dùng</div></div>
+  </div>
+
+  <section class="section">
+    <div class="section-head"><h2 class="section-title">🧾 Tất cả đơn hàng</h2>
+      <span class="result-info">${byBrand.brandLabel || ""}</span></div>
+    ${orders.length ? orders.map(o => `
+      <div class="order-card">
+        <div class="order-top">
+          <span class="order-id">${o.id}</span>
+          <span>${fmtDate(o.at)}</span>
+          <span class="status ${o.status === "Hoàn thành" ? "done" : ""}">${o.status}</span>
+          <span>👤 ${esc(o.email)}</span>
+          <span>${o.pay === "COD" ? "💵 COD" : o.pay === "Bank" ? "🏦 CK" : "📱 Ví"}</span>
+          <button class="btn btn-sm btn-dark" style="margin-left:auto" onclick="markDone('${o.id}', '${esc(o.email)}')">✔ Hoàn thành</button>
+        </div>
+        ${o.items.map(i => `<div class="order-item"><span>${esc(i.name)} × ${i.qty}</span><span>${fmtMoney(i.price * i.qty)}</span></div>`).join("")}
+        <div class="order-total">Tổng: ${fmtMoney(o.total)}</div>
+        <div style="font-size:12.5px;color:var(--gray);margin-top:6px">📍 ${esc(o.addr)} · 📞 ${esc(o.phone)} · 👤 ${esc(o.name)}</div>
+      </div>`).join("")
+    : `<div class="empty"><div class="big">📦</div><h3>Chưa có đơn hàng nào trong hệ thống</h3>
+       <p>Đơn hàng từ mọi tài khoản sẽ hiện ở đây.</p></div>`}
+  </section>
+
+  ${Object.keys(byBrand).length ? `
+  <section class="section">
+    <div class="section-head"><h2 class="section-title">📊 Doanh thu theo hãng</h2></div>
+    <div class="panel">
+      ${Object.entries(byBrand).sort((a, b) => b[1] - a[1]).map(([b, v]) => `
+        <div style="margin-bottom:12px">
+          <div class="sum-row"><b>${esc(b)}</b><span>${fmtMoney(v)}</span></div>
+          <div style="height:8px;background:var(--bg-soft);border-radius:99px;overflow:hidden">
+            <div style="height:100%;width:${Math.max(4, Math.round(v / revenue * 100))}%;background:var(--grad-btn);border-radius:99px"></div>
+          </div>
+        </div>`).join("")}
+    </div>
+  </section>` : ""}
+
+  <section class="section">
+    <div class="section-head"><h2 class="section-title">👥 Tài khoản hệ thống (${users.length})</h2></div>
+    <div class="cart-table" style="overflow-x:auto">
+      <div class="cart-row head" style="grid-template-columns:60px 1.4fr 1.6fr 1fr 100px">
+        <span>STT</span><span>Họ tên</span><span>Email</span><span>Số đơn</span><span>PW mặc định</span>
+      </div>
+      ${users.map(x => `
+        <div class="cart-row" style="grid-template-columns:60px 1.4fr 1.6fr 1fr 100px;font-size:13.5px">
+          <span>${x.stt || "-"}</span>
+          <span><b>${esc(x.name)}</b>${x.email === u.email ? " ⭐" : ""}</span>
+          <span style="color:var(--gray)">${esc(x.email)}</span>
+          <span>${DB.ordersOf(x.email).length}</span>
+          <span><code style="font-size:11.5px;background:var(--bg-soft);padding:2px 8px;border-radius:6px">${esc(x.pass)}</code></span>
+        </div>`).join("")}
+    </div>
+  </section>`;
+}
+
+function markDone(orderId, email) {
+  const all = JSON.parse(localStorage.getItem("lt_orders") || "{}");
+  const list = all[email] || [];
+  const o = list.find(x => x.id === orderId);
+  if (o) { o.status = "Hoàn thành"; localStorage.setItem("lt_orders", JSON.stringify(all)); }
+  toast(`✔ Đơn ${orderId} đã hoàn thành`, "ok");
+  render();
+}
+
 function viewNotFound() {
   return `<div class="empty"><div class="big">🤖</div><h3>404 — Không tìm thấy trang</h3><p>Đường dẫn không tồn tại.</p><a href="#/" class="btn btn-grad">Về trang chủ</a></div>`;
 }
@@ -579,6 +679,7 @@ function render() {
   else if (parts[0] === "register") html = viewRegister();
   else if (parts[0] === "checkout") html = viewCheckout();
   else if (parts[0] === "account") html = viewAccount();
+  else if (parts[0] === "admin") html = viewAdmin();
   else html = viewNotFound();
 
   view.innerHTML = html;
